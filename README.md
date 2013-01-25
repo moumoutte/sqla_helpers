@@ -1,4 +1,4 @@
 sqla_helpers
 ============
 
-Provide few methods wrapping  SQLAlchemy ORM
+.. automodule:: sqla_helpers.base_model
