@@ -111,10 +111,15 @@ Par exemple, on peut rechercher tous les MyModel dont le MyOtherModel a pour nom
     >>> MyModel.filter(awesome_attr__name='toto')
     [<MyModel object at 0x2c19d90>]
 
-.. warning::
 
-    On ne peut pas rechercher une relation par un objet en entier. L'idée, c'est
-    de fournir une surcouche à SQLAlchemy, pas d'ajouter des fonctionnalités.
+On peut même rechercher suivant un objet complet.
+
+.. code-block:: python
+
+    >>> otherModel = MyOtherModel.get(name='toto')
+    >>> MyModel.filter(awesome_attr=otherModel)
+    [<MyModel object at 0x2c19d90>]
+
 
 Le séparateur `__` (double underscore) permet de faire la séparation entre les
 différentes entités sollicitées.
