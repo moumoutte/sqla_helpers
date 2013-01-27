@@ -1,16 +1,16 @@
 #-*- coding: utf-8 -*-
 """
-Helpers SQLAlchemy - :class:`base_model.BaseModel`
-==================================================
+Helpers SQLAlchemy - :class:`sqla_helpers.base_model.BaseModel`
+===============================================================
 
 Getting Started
 ----------------
 
-:class:`base_model.BaseModel` a pour but d'instrumenter la syntaxe d'SQLAlchemy pour
+:class:`sqla_helpers.base_model.BaseModel` a pour but d'instrumenter la syntaxe d'SQLAlchemy pour
 fournir à l'utiliseur final, des méthodes simplifiées permettant la récupération
 d'objets en base.
 
-:class:`base_model.BaseModel` est une classe qui est utilisable en tant que Mixin, elle
+:class:`sqla_helpers.base_model.BaseModel` est une classe qui est utilisable en tant que Mixin, elle
 n'hérite d'aucune classe et elle n'est pas à sous-classer.
 Pour avoir accès aux méthodes dans un modèle, il faut alors déclarer une table
 comme ceci:
@@ -31,41 +31,67 @@ comme ceci:
         name = ...
         model_id = ... # Clef étrangère sur MyModel
 
+
 La classe :class:`DeclarativeBase` est la classe générée par la fonction
 :func:`declarative_base` d'SQLAlchemy.
 
-Ainsi pour une session SQLAlchemy donnée, le modèle possède des méthodes de
-recherche.
+Il est également possible d'utiliser :class:`sqla_helpers.base_model.BaseModel` comme paramètre `cls` de la fonction :func:`declarative_base`.
+Et ainsi on peut se passer de l'utilisation de la classe comme Mixin.
+
+
+.. code-block:: python
+
+    from sqlalchemy.ext.declarative
+    from sqla_helpers.base_model import BaseModel
+    DeclarativeBase = declarative_base(cls=BaseModel)
+
+
+.. code-block:: python
+
+    class MyModel(DeclarativeBase):
+        # ...
+
+
+:class:`sqla_helpers.base_model.BaseModel` attend une manière de récupérer une session quand une requête est effectuée.
+Pour ce faire, elle fait appel à la fonction stockée dans l'attribut :attr:`sqla_helpers.base_model.BaseModel.sessionmaker`.
+Ainsi, lors de l'initialisation de l'application, il faut stocker un sessionmaker dans la classe.
+
+.. code-block:: python
+
+    # Initialisation de l'application
+    def main():
+        BaseModel.sessionmaker = scoped_session(sessionmaker(bind=engine))
+        Base = declarative_base(cls=BaseModel)
 
 
 Cas d'utilisation simple :
 
 .. code-block:: python
 
-    >>> MyModel.all(session)
+    >>> MyModel.all()
     [<MyModel object at 0x2c19d90>]
-    >>> MyModel.get(session, id=2)
+    >>> MyModel.get(id=2)
     <MyModel object at 0x2c19d90>
-    >>> MyModel.get(session, id=3)
+    >>> MyModel.get(id=3)
     *** NoResultFound: No row was found for one()
-    >>> MyModel.filter(session, id=2)
+    >>> MyModel.filter(id=2)
     [<MyModel object at 0x2c19d90>]
-    >>> MyModel.filter(session, id=3)
+    >>> MyModel.filter(id=3)
     []
 
 
-* :meth:`base_model.BaseModel.all` ramène l'ensemble des objets en base.
-* :meth:`base_model.BaseModel.filter` ramène les objets correspondants aux critères donnés sous forme de liste.
-* :meth:`base_model.BaseModel.get` ramène un unique élément correspond aux critères données.
+* :meth:`sqla_helpers.base_model.BaseModel.all` ramène l'ensemble des objets en base.
+* :meth:`sqla_helpers.base_model.BaseModel.filter` ramène les objets correspondants aux critères donnés sous forme de liste.
+* :meth:`sqla_helpers.base_model.BaseModel.get` ramène un unique élément correspond aux critères données.
 
 On peut bien évidemment enchaîner les critères de recherche qui seront pris en
 compte avec un opérateur `&&` (ET) logique.
 
 .. code-block:: python
 
-    >>> MyOtherModel.filter(session, name='toto')
+    >>> MyOtherModel.filter(name='toto')
     [<MyOtherModel object at 0x2c19d90>, <MyOtherModel object at 0x2e27e08>]
-    >>> MyOtherModel.filter(session, name='toto', id=2)
+    >>> MyOtherModel.filter(name='toto', id=2)
     [<MyOtherModel object at 0x2c19d90>]
 
 
@@ -82,7 +108,7 @@ Par exemple, on peut rechercher tous les MyModel dont le MyOtherModel a pour nom
 
 .. code-block:: python
 
-    >>> MyModel.filter(session, awesome_attr__name='toto')
+    >>> MyModel.filter(awesome_attr__name='toto')
     [<MyModel object at 0x2c19d90>]
 
 .. warning::
@@ -102,7 +128,7 @@ MyOtherOtherObject dont le nom est 'toto'.
 
 .. code-block:: python
 
-    >>> MyModel.filter(session, awesome_attr__other_attr__name='toto')
+    >>> MyModel.filter(awesome_attr__other_attr__name='toto')
     [<MyModel object at 0x2c19d90>]
 
 
@@ -118,7 +144,7 @@ Par exemple, si l'on veut tous les MyModel qui n'ont PAS pour id la valeur 2.
 
 .. code-block:: python
 
-    >>> MyModel.filter(session, id__not=2)
+    >>> MyModel.filter(id__not=2)
     []
 
 Les opérateurs disponibles sont :
@@ -131,6 +157,4 @@ Les opérateurs disponibles sont :
 * 'in': Contenu dans (Le paramètre de recherche doit-être une liste)
 * 'like': opérateur SQL LIKE
 * 'ilike': opérateur SQL ILIKE
-
-
 """

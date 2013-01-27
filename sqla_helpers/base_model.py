@@ -1,6 +1,22 @@
 #-*- coding: utf-8 -*-
 
+class ClassProperty(property):
+    """
+    Classe qui a pour but de fournir une alternative à l'utilisation du
+    decaroteur property pour un attribut de classe.
+    """
+    def __get__(self, cls, owner):
+        return self.fget.__get__(None, owner)()
+
+
 class BaseModel(object):
+    sessionmaker = None
+    """ Permet de construire de session suivant une méthode fournie"""
+
+    """
+    Classe d'un modèle de base. Elle fournit du sucre syntaxiques pour faire de
+    la récupération d'objets en base.
+    """
     operators = {
         'not': '__ne__',
         'lt': '__lt__',
@@ -9,12 +25,32 @@ class BaseModel(object):
         'gte': '__gte__',
         'in': 'in_',
         'like': 'like_',
-        'ilike': 'ilike_'
+        'ilike': 'ilike_',
     }
 
+
+    @ClassProperty
     @classmethod
-    def search(cls, session, **kwargs):
-        query = session.query(cls)
+    def session(cls):
+        """
+        Appelle :attr:`BaseModel.sessionmaker` et renvoie une session
+        nouvellement construite.
+
+        Ne pas oubliez de mettre en place :attr:`BaseModel.sessionmaker` dans
+        l'initialisation de l'application.
+        """
+        return cls.sessionmaker()
+
+
+    @classmethod
+    def search(cls, **kwargs):
+        """
+        Effectue la recherche d'objet suivant les critères passés en arguments.
+        Le retour est un objet :class:`sqlachemy.orm.query.Query`
+
+        Ce qui permet d'enchaîner les critères de recherches si besoin.
+        """
+        query = cls.session.query(cls)
         # On maintient une liste des classes déjà jointes
         joinedClass = []
         for k, v in kwargs.iteritems():
@@ -53,17 +89,26 @@ class BaseModel(object):
 
 
     @classmethod
-    def get(cls, session, **kwargs):
-        query = cls.search(session, **kwargs)
+    def get(cls, **kwargs):
+        """
+        Retourne un objet correspond aux critères donnés.
+        """
+        query = cls.search(**kwargs)
         return query.one()
 
 
     @classmethod
-    def all(cls, session):
-        return session.query(cls).all()
+    def all(cls):
+        """
+        Retourne tous les objets d'une classe contenu en base.
+        """
+        return cls.search().all()
 
 
     @classmethod
-    def filter(cls, session, **kwargs):
-        query = cls.search(session, **kwargs)
+    def filter(cls, **kwargs):
+        """
+        Retourne une liste d'objets d'une classe correspond aux critères donnés.
+        """
+        query = cls.search(**kwargs)
         return query.all()
