@@ -41,7 +41,7 @@ Et ainsi on peut se passer de l'utilisation de la classe comme Mixin.
 
 .. code-block:: python
 
-    from sqlalchemy.ext.declarative
+    from sqlalchemy.ext.declarative import declarative_base
     from sqla_helpers.base_model import BaseModel
     DeclarativeBase = declarative_base(cls=BaseModel)
 
