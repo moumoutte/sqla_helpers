@@ -60,8 +60,23 @@ Ainsi, lors de l'initialisation de l'application, il faut stocker un sessionmake
 
     # Initialisation de l'application
     def main():
+        # ...
         BaseModel.sessionmaker = scoped_session(sessionmaker(bind=engine))
-        Base = declarative_base(cls=BaseModel)
+        # ...
+
+
+Pour passer une session globale, il suffit simplement que la fonction passée à :attr:`sqla_helpers.base_model.BaseModel.sessionmaker`
+renvoie la référence sur la session globale
+
+.. code-block:: python
+
+    from somwhere import DBSession
+
+    # Initialisation de l'application
+    def main():
+        # ...
+        BaseModel.sessionmaker = lambda: DBSession
+        # ...
 
 
 Cas d'utilisation simple :
