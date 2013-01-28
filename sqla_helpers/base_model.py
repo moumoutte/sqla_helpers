@@ -10,9 +10,6 @@ class ClassProperty(property):
 
 
 class BaseModel(object):
-    sessionmaker = None
-    """ Permet de construire de session suivant une méthode fournie"""
-
     """
     Classe d'un modèle de base. Elle fournit du sucre syntaxiques pour faire de
     la récupération d'objets en base.
@@ -24,9 +21,18 @@ class BaseModel(object):
         'gt': '__gt__',
         'gte': '__gte__',
         'in': 'in_',
-        'like': 'like_',
-        'ilike': 'ilike_',
+        'like': 'like',
+        'ilike': 'ilike',
     }
+
+
+    @classmethod
+    def register_sessionmaker(cls, sessionmaker):
+        """
+        Enregistrement de la fonction utiliser pour créer une session.
+        La fonction enregistrée ne doit prendre aucun paramètre
+        """
+        cls.sessionmaker = staticmethod(sessionmaker)
 
 
     @ClassProperty

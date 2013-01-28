@@ -54,14 +54,16 @@ Et ainsi on peut se passer de l'utilisation de la classe comme Mixin.
 
 :class:`sqla_helpers.base_model.BaseModel` attend une manière de récupérer une session quand une requête est effectuée.
 Pour ce faire, elle fait appel à la fonction stockée dans l'attribut :attr:`sqla_helpers.base_model.BaseModel.sessionmaker`.
-Ainsi, lors de l'initialisation de l'application, il faut stocker un sessionmaker dans la classe.
+Ainsi, lors de l'initialisation de l'application, il faut stocker un
+sessionmaker dans la classe, grâce à la méthode
+`sqla_helpers.base_model.BaseModel.register_sessionmaker`
 
 .. code-block:: python
 
     # Initialisation de l'application
     def main():
         # ...
-        BaseModel.sessionmaker = scoped_session(sessionmaker(bind=engine))
+        BaseModel.register_sessionmaker(scoped_session(sessionmaker(bind=engine)))
         # ...
 
 
@@ -75,7 +77,7 @@ renvoie la référence sur la session globale
     # Initialisation de l'application
     def main():
         # ...
-        BaseModel.sessionmaker = lambda: DBSession
+        BaseModel.register_sessionmaker(lambda: DBSession)
         # ...
 
 
@@ -178,3 +180,5 @@ Les opérateurs disponibles sont :
 * 'like': opérateur SQL LIKE
 * 'ilike': opérateur SQL ILIKE
 """
+
+__version__ = "0.2.0"

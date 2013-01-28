@@ -1,0 +1,5 @@
+0.2.0
+	* Les méthodes fournies non plus besoin d'une session en paramètre
+
+0.1.0
+	* Release initiale
