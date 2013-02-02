@@ -1,3 +1,1 @@
-
-
-.. include:: doc/sqla_helpers.rst
+<https://sqla_helpers.readthedocs.org/en/latest/sqla_helpers.html#module-sqla_helpers>
