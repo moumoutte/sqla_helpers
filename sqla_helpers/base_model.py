@@ -146,15 +146,20 @@ class BaseModel(object):
             attr_declaration = getattr(klass, attr)
             attr_type = attr_declaration.property
 
+            # Récupération de la valeur effective de l'attribut
+            instance_attr = getattr(self, attr)
             if isinstance(attr_type, RelationshipProperty):
+
+                # Si on est au fond, on ne fait rien
                 if depth - 1 <= 0:
                     continue
-                instance_attr = getattr(self, attr)
+
                 if isinstance(instance_attr, InstrumentedList):
                     res[attr] = [ a.dump(depth=depth-1) for a in instance_attr]
                 else:
-                    res[attr] = getattr(self, attr).dump(depth=depth-1)
+                    res[attr] = instance_attr.dump(depth=depth-1)
+
             else:
-                res[attr] = getattr(self, attr)
+                res[attr] = instance_attr
 
         return res
