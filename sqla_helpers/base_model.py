@@ -1,4 +1,6 @@
 #-*- coding: utf-8 -*-
+from sqlalchemy.orm.properties import RelationshipProperty
+from sqlalchemy.orm.collections import InstrumentedList
 
 class ClassProperty(property):
     """
@@ -118,3 +120,41 @@ class BaseModel(object):
         """
         query = cls.search(**kwargs)
         return query.all()
+
+
+    def dump(self, depth=2):
+        """
+        Retourne l'objet sous forme de dictionnaire python avec ses
+        dépendances.
+
+        La profondeur permet de ne pas copier les attributs trop profondéments.
+        Par exemple avec une profondeur de 1, on n'ira pas chercher les objets
+        en relation.
+        """
+        res = {}
+        klass = self.__class__
+
+        # On itère sur les propriétés de l'objet, mais on récupères les
+        # informations qui nous intéresse dans la classe de l'objet
+        # Itérer sur les attributs de l'objet permet de récupérer moins de
+        # valeurs inutiles, ce qui facilite le parcours.
+        for attr in self.__dict__:
+
+            if attr.startswith('_sa_'):
+                continue
+
+            attr_declaration = getattr(klass, attr)
+            attr_type = attr_declaration.property
+
+            if isinstance(attr_type, RelationshipProperty):
+                if depth - 1 <= 0:
+                    continue
+                instance_attr = getattr(self, attr)
+                if isinstance(instance_attr, InstrumentedList):
+                    res[attr] = [ a.dump(depth=depth-1) for a in instance_attr]
+                else:
+                    res[attr] = getattr(self, attr).dump(depth=depth-1)
+            else:
+                res[attr] = getattr(self, attr)
+
+        return res
