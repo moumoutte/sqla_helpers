@@ -22,6 +22,7 @@ setup(
     requires=[
         'nose',
         'coverage',
-        'mock'
+        'mock',
+        'sqlalchemy'
     ]
 )
