@@ -2,6 +2,8 @@
 from sqlalchemy.orm.properties import RelationshipProperty
 from sqlalchemy.orm.collections import InstrumentedList
 
+from sqla_helpers import loading
+
 class ClassProperty(property):
     """
     Classe qui a pour but de fournir une alternative à l'utilisation du
@@ -120,6 +122,92 @@ class BaseModel(object):
         """
         query = cls.search(**kwargs)
         return query.all()
+
+
+    @classmethod
+    def load(cls, d, hard=False):
+        """
+        Instancie un objet de la classe à partir d'attribut récupérer dans le
+        dictionnaire fournit.
+
+        Si le dictionnaire fournit toutes les valeurs qui constituent la clef
+        primaire de l'objet, alors l'objet est chargé depuis la base. Puis
+        les valeurs indiquées dans le dictionnaire sont rentrées dans l'objet
+        chargée.
+
+        .. code-block:: python
+
+            >>> t = Treatment.get(id=1)
+            >>> t.name
+            'Great Treatment'
+            >>> t = Treatment.load({'id': 1, 'name': 'Awesome Treatment'})
+            >>> t.name
+            'Awesome Treatment'
+            >>> session.commit()
+            >>> Treatment.get(id=1).name
+            'Awesome Treatment'
+
+        Si l'option `hard` est à True , une exception est levée si une valeur
+        n'est pas trouvée dans le dictionnaire fournit.
+        """
+
+        # On détermine si on doit charger l'instance depuis la base ou non.
+        # La décision est prise si tous les attributs qui constitue la clef
+        # primaire de l'objet sont trouvés dans le dico. Si oui, on charge
+        # depuis la base, sinon on crée une nouvelle instance
+        from_db = False
+        loading_key = {}
+        for attr in cls.__mapper__.primary_key:
+            if not attr.key in d:
+                from_db = False
+                break
+
+            loading_key[attr.key] = d[attr.key]
+            from_db = True
+
+        if from_db:
+            instance = cls.get(**loading_key)
+        else:
+            instance = loading.instancied(cls)
+
+        # Une fois l'instance crée , on itère sur toutes les propriétés de
+        # la classe à laquelle elle appartient.
+        # Et on cherche dans le dictionnaire si elles apparaissent.
+        # En mode `hard`, si un clef n'est pas spécifiée on léve une
+        # exception, sinon on ignore l'erreur.
+        for attr_key, attr_type in cls.__mapper__._props.iteritems():
+            try:
+                attr_value = d[attr_key]
+            except KeyError:
+                # En mode soft, on ne relache pas l'erreur
+                # En mode hard, oui.
+                if hard:
+                    raise
+            else:
+                instance_attr = getattr(instance, attr_key)
+                # Si l'attribut sur lequel nous sommes, est une relation,
+                # On délégue son chargement à la classe à laquelle l'attrbut
+                # appartient.
+                # Sinon on se contente de mettre la valeur trouvée dans le
+                # dictionnaire, dans l'attribut de la nouvelle instance.
+                if isinstance(attr_type, RelationshipProperty):
+                    attr_class = attr_type.mapper.class_
+                    if isinstance(instance_attr, InstrumentedList):
+                        # Si on est sur une liste, on s'attend à avoir une
+                        # liste de dico
+                        for d in attr_value:
+                            instance_attr.append(attr_class.load(d))
+                    else:
+                        instance_attr = attr_class.load(attr_value)
+
+                else:
+                    instance_attr = attr_value
+
+                setattr(instance, attr_key, instance_attr)
+
+        return instance
+
+
 
 
     def dump(self, excludes=[], depth=2):

@@ -182,7 +182,7 @@ Du JSON
 -------
 
 Souvent dans les applications web, le client et le serveur communique par l'intermédiaire du format JSON.
-Pour faciliter les opérations de chargement, :mod:`sqla_helpers` fournit des (une pour l'instant)
+Pour faciliter les opérations de chargement, :mod:`sqla_helpers` fournit des
 méthodes permettant de charger des objets modèles depuis un dictionnaire python ou bien de générer un dictionnaire depuis un objet modèle SQLALchemy.
 
 La méthode :meth:`sqla_helpers.base_model.BaseModel.dump` permet la génération d'un dictionnaire qui est transformable en JSON.
@@ -199,6 +199,62 @@ La méthode :meth:`sqla_helpers.base_model.BaseModel.dump` permet la génératio
             "id": 1,
             "name": "Great Treatment"
         }
+
+
+Et la méthode de classe `sqla_helpers.base_model.Model.load` qui permet d'instancier des objets à partir d'un dictionnaire.
+Le passage par dictionnaire est sensé faciliter l'accès aux données en JSON ou bien générer du JSON depuis le
+dictionnaire.
+
+Pour le chargement d'un objet, les objets sont récupérés en base si les attributs composant la clef primaire
+sont trouvés dans le dictionnaire. Sinon, une nouvelle instance est créée.
+
+.. code-block:: python
+
+        >>> t = Treatment.get(id=7)
+        >>> t.name
+        'YEAH \\o/'
+        >>> t.id
+        7
+        >>> t.status.name
+        'Sacre status !'
+        >>> t.status.id
+        7
+        >>> t = Treatment.load({'id': 7, 'name': 'hello'})
+        >>> t.name, t.id
+        ('hello', 7)
+        >>> session.commit()
+        >>> t.dump()
+        {
+                'id': 7,
+                'name': u'hello',
+                'status': {'id': 7, 'name': u'Sacre status !'},
+                'status_id': 7
+        }
+        >>> tr = Treatment.load(t.dump())
+        >>> tr == t
+        True
+        >>> tr.status == t.status
+        True
+        >>> Treatment.load(tr.dump()).dump()
+        {
+                'id': 7,
+                'name': u'hello',
+                'status': {'id': 7, 'name': u'Sacre status !'},
+                'status_id': 7
+        }
+        >>> tr = Treatment.load({'name': 'nouveau traitmente', 'status': {'name': 'nouveau status'}})
+        >>> tr.id
+        None
+        >>> tr.status.id
+        None
+        >>> tr.status.
+        >>> session.add(tr)
+        >>> session.commit()
+        >>> tr.id
+        10
+        >>> tr.status.id
+        8
+
 
 La classe :class:`sqla_helpers.base_model.BaseModel`
 ====================================================
