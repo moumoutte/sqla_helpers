@@ -178,6 +178,28 @@ Les opérateurs disponibles sont :
 * 'like': opérateur SQL LIKE
 * 'ilike': opérateur SQL ILIKE
 
+Du JSON
+-------
+
+Souvent dans les applications web, le client et le serveur communique par l'intermédiaire du format JSON.
+Pour faciliter les opérations de chargement, :mod:`sqla_helpers` fournit des (une pour l'instant)
+méthodes permettant de charger des objets modèles depuis un dictionnaire python ou bien de générer un dictionnaire depuis un objet modèle SQLALchemy.
+
+La méthode :meth:`sqla_helpers.base_model.BaseModel.dump` permet la génération d'un dictionnaire qui est transformable en JSON.
+
+.. code-block:: python
+
+        >>> print json.dumps(t.dump(), indent=4)
+        {
+            "status": {
+                "id": 1,
+                "name": "Ok"
+            },
+            "status_id": 1,
+            "id": 1,
+            "name": "Great Treatment"
+        }
+
 La classe :class:`sqla_helpers.base_model.BaseModel`
 ====================================================
 

@@ -60,7 +60,7 @@ class BaseModel(object):
         """
         query = cls.session.query(cls)
         # On maintient une liste des classes déjà jointes
-        joinedClass = []
+        joined_class = []
         for k, v in kwargs.iteritems():
             # Si il y a des __ dans le paramètre, on souhaite
             # faire une recherche sur un attribut d'une relation
@@ -85,12 +85,12 @@ class BaseModel(object):
             # "task").id_task)
             while len(params) > 0:
                 klass = getattr(klass, params.pop(0)).property.mapper.class_
-                if klass not in joinedClass:
+                if klass not in joined_class:
                     query = query.join(klass)
-                    joinedClass.append(klass)
+                    joined_class.append(klass)
 
-            instrumentedAttr = getattr(klass, comparator_attr_name)
-            comparator = getattr(instrumentedAttr, operator)
+            instrumented_attr = getattr(klass, comparator_attr_name)
+            comparator = getattr(instrumented_attr, operator)
             query = query.filter(comparator(v))
 
         return query
@@ -122,7 +122,7 @@ class BaseModel(object):
         return query.all()
 
 
-    def dump(self, depth=2):
+    def dump(self, excludes=[], depth=2):
         """
         Retourne l'objet sous forme de dictionnaire python avec ses
         dépendances.
@@ -130,27 +130,57 @@ class BaseModel(object):
         La profondeur permet de ne pas copier les attributs trop profondéments.
         Par exemple avec une profondeur de 1, on n'ira pas chercher les objets
         en relation.
+
+        Le paramètre d'exclusion sert à exclure les attributs que l'on ne
+        veut pas exporter.
+
+        .. code-block:: python
+
+            >>> t = Treatment.get(id=1)
+            >>> print json.dumps(t.dump(), indent=4)
+            {
+                "status": {
+                    "id": 1,
+                    "name": "Ok"
+                },
+                "status_id": 1,
+                "id": 1,
+                "name": "Great Treatment"
+            }
+
+            >>> print json.dumps(t.dump(depth=1), indent=4)
+            {
+                "status_id": 1,
+                "id": 1,
+                "name": "Great Treatment"
+            }
+            >>> print json.dumps(t.dump(excludes=['status_id']), indent=4)
+            {
+                "status": {
+                    "id": 1,
+                    "name": "Ok"
+                },
+                "id": 1,
+                "name": "Great Treatment"
+            }
+
         """
         res = {}
-        klass = self.__class__
 
-        # On itère sur les propriétés de l'objet, mais on récupères les
-        # informations qui nous intéresse dans la classe de l'objet
-        # Itérer sur les attributs de l'objet permet de récupérer moins de
-        # valeurs inutiles, ce qui facilite le parcours.
-        for attr in self.__dict__:
+        # On itére sur les propriétés de classes pour récupérer seulement
+        # les attributs déclarer en base pour ne pas exporter les autres attributs
+        # Mais on récupère bien la valeur dans l'instance d'objet.
+        for attr, attr_type in self.__mapper__._props.iteritems():
 
-            if attr.startswith('_sa_'):
+            # Si le champ est à exclure on passe au champ suivant
+            if attr in excludes:
                 continue
-
-            attr_declaration = getattr(klass, attr)
-            attr_type = attr_declaration.property
 
             # Récupération de la valeur effective de l'attribut
             instance_attr = getattr(self, attr)
             if isinstance(attr_type, RelationshipProperty):
 
-                # Si on est au fond, on ne fait rien
+                # Si on est à la profondeur on ne fait rien
                 if depth - 1 <= 0:
                     continue
 
