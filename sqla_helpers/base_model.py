@@ -83,8 +83,8 @@ class BaseModel(object):
             # comparator_attr_name = "id_task"
             # cls.(classe de l'attribut "parameter").(classe de l'attribut
             # "task").id_task)
-            while len(params) > 0:
-                klass = getattr(klass, params.pop(0)).property.mapper.class_
+            for param in params:
+                klass = getattr(klass, param).property.mapper.class_
                 if klass not in joined_class:
                     query = query.join(klass)
                     joined_class.append(klass)
