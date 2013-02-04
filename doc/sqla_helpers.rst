@@ -247,7 +247,6 @@ sont trouvés dans le dictionnaire. Sinon, une nouvelle instance est créée.
         None
         >>> tr.status.id
         None
-        >>> tr.status.
         >>> session.add(tr)
         >>> session.commit()
         >>> tr.id
