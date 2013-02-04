@@ -201,7 +201,7 @@ La méthode :meth:`sqla_helpers.base_model.BaseModel.dump` permet la génératio
         }
 
 
-Et la méthode de classe `sqla_helpers.base_model.Model.load` qui permet d'instancier des objets à partir d'un dictionnaire.
+Et la méthode de classe `sqla_helpers.base_model.BaseModel.load` qui permet d'instancier des objets à partir d'un dictionnaire.
 Le passage par dictionnaire est sensé faciliter l'accès aux données en JSON ou bien générer du JSON depuis le
 dictionnaire.
 
