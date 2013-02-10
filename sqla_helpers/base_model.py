@@ -3,6 +3,7 @@ from sqlalchemy.orm.properties import RelationshipProperty
 from sqlalchemy.orm.collections import InstrumentedList
 
 from sqla_helpers import loading
+from sqla_helpers.process import process_params
 
 class ClassProperty(property):
     """
@@ -18,16 +19,8 @@ class BaseModel(object):
     Classe d'un modèle de base. Elle fournit du sucre syntaxiques pour faire de
     la récupération d'objets en base.
     """
-    operators = {
-        'not': '__ne__',
-        'lt': '__lt__',
-        'le': '__lte__',
-        'gt': '__gt__',
-        'gte': '__gte__',
-        'in': 'in_',
-        'like': 'like',
-        'ilike': 'ilike',
-    }
+
+    process_params = classmethod(process_params)
 
 
     @classmethod
@@ -53,7 +46,7 @@ class BaseModel(object):
 
 
     @classmethod
-    def search(cls, **kwargs):
+    def search(cls, *operator, **criterion):
         """
         Effectue la recherche d'objet suivant les critères passés en arguments.
         Le retour est un objet :class:`sqlachemy.orm.query.Query`
@@ -63,47 +56,25 @@ class BaseModel(object):
         query = cls.session.query(cls)
         # On maintient une liste des classes déjà jointes
         joined_class = []
-        for k, v in kwargs.iteritems():
-            # Si il y a des __ dans le paramètre, on souhaite
-            # faire une recherche sur un attribut d'une relation
-            params = k.split('__')
-            # Le dernier élément peut être un opérateur
-            if params[-1] in cls.operators.keys():
-                op = params.pop()
-                operator = cls.operators[op]
-            else:
-                operator = '__eq__'
-            # On récupère le nom de l'attribut de comparaison
-            # qui est systèmatiquement en dernier
-            comparator_attr_name = params.pop()
-            # On garde la classe à partir de laquelle on récupère l'attribut
-            # courant.
-            klass = cls
-            # La boucle permet de récupérer l'attribut dans la classe la plus
-            # loin dans les relations.
-            # Exemple = [parameter, task, id_task]
-            # comparator_attr_name = "id_task"
-            # cls.(classe de l'attribut "parameter").(classe de l'attribut
-            # "task").id_task)
-            for param in params:
-                klass = getattr(klass, param).property.mapper.class_
-                if klass not in joined_class:
-                    query = query.join(klass)
-                    joined_class.append(klass)
+        clauses = []
 
-            instrumented_attr = getattr(klass, comparator_attr_name)
-            comparator = getattr(instrumented_attr, operator)
-            query = query.filter(comparator(v))
+        # On itère sur tous les objets operator qu'on a reçu et on process les
+        # objets
+        for operator in list(operator):
+            clauses.append(operator(cls, joined_class))
 
-        return query
+        # On process les critéres qu'on nous passe directement
+        clauses.extend(cls.process_params(joined_class, **criterion))
+        query = query.join(*joined_class)
+        return query.filter(*clauses)
 
 
     @classmethod
-    def get(cls, **kwargs):
+    def get(cls, *operators, **criterions):
         """
         Retourne un objet correspond aux critères donnés.
         """
-        query = cls.search(**kwargs)
+        query = cls.search(*operators, **criterions)
         return query.one()
 
 
@@ -116,11 +87,11 @@ class BaseModel(object):
 
 
     @classmethod
-    def filter(cls, **kwargs):
+    def filter(cls, *operators, **criterions):
         """
         Retourne une liste d'objets d'une classe correspond aux critères donnés.
         """
-        query = cls.search(**kwargs)
+        query = cls.search(*operators, **criterions)
         return query.all()
 
 
