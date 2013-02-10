@@ -9,10 +9,51 @@ operators = {
     'like': 'like',
     'ilike': 'ilike',
 }
+"""
+Dictionnaire des opérateurs applicables à un InstrumentedAttribut
+La clef représente l'opérateur dans la syntaxe :mod:`sqla_helpers` et la valeur
+est le nom de la méthode a appellé sur un objet de type. InstrumentAttribut
+"""
 
 def process_params(cls, class_found, **kwargs):
     """
-    Retourne une liste de critère.
+    Retourne une liste de critères SQLAlchemy suivant la syntaxe sqla_helpers.
+
+    :param:`cls` est la classe racine à partir de laquelle les attributs seront
+    récupérer.
+
+    Au fur et à mesure du traitement, on stock les classes des attributs
+    rencontrées dans le paramètre :param:`class_found`. Elles ne sont ajoutées
+    que lorsqu'elles n'apparaissent pas dans la liste (i.e. pas de doublon dans
+    la liste.)
+
+    L'attribut est donc modifié au fur et à mesure du traitement (Effet de bord).
+
+    .. rubric:: Exemple
+
+    Si l'on souhaite faire une recherche sur l'attribut `name` d'un objet de la
+    classe Treatment, la fonction sera appellée:
+
+    .. code-block:: python
+
+        >>> class_found = []
+        >>> process_params(Treatment, class_found, name='test')
+        [<sqlalchemy.sql.expression.BinaryExpression object at 0x22bd3d0>]
+        >>> class_found
+        []
+
+    Dans cet exemple le paramètre :param:`class_found` n'a pas bougé puisque
+    l'attribut `name` n'est pas un objet ezn relation. Mais si nous recherchions
+    des traitments par status nous aurions
+
+    .. code-block:: python
+
+        >>> class_found = []
+        >>> process_params(Treatment, class_found, status_name='test')
+        [<sqlalchemy.sql.expression.BinaryExpression object at 0x22bd3d0>]
+        >>> class_found
+        [Status]
+
     """
     criterion = []
     for k, v in kwargs.iteritems():
