@@ -1,5 +1,26 @@
 Helpers SQLAlchemy - :class:`sqla_helpers.base_model.BaseModel`
 ===============================================================
+Installation
+-------------
+
+.. rubric:: Git
+
+Installation depuis le dépôt git
+
+.. code-block:: console
+
+        $> git clone git@github.com:moumoutte/sqla_helpers.git
+        $> cd sqla_helpers
+        $> sudo python2.7 setup.py install
+
+.. rubric:: Eggs
+
+Installation depuis les archives `eggs`
+
+.. code-block:: console
+
+        $> sudo pip install sqla_helpers
+
 
 Getting Started
 ----------------
@@ -177,6 +198,64 @@ Les opérateurs disponibles sont :
 * 'in': Contenu dans (Le paramètre de recherche doit-être une liste)
 * 'like': opérateur SQL LIKE
 * 'ilike': opérateur SQL ILIKE
+
+
+Requêtes plus complexes
+-----------------------
+
+Toujours sur le modèle de Django, :mod:`sqla_helpers` fournit un :class:`sqla_helpers.logical.Q` object afin de pouvoir réaliser des opération un peu plus complexes
+Le :class:`sqla_helpers.logical.Q` object est capable de prendre ne compte la
+syntaxe sqla_helpers.
+
+.. code-block:: python
+
+    >>> from sqla_helpers.logical import Q
+    >>> Q(status__name='test')
+    <sqla_helpers.logical.Q at 0x2376cd0>
+
+
+Ces objets sont transmissibles aux méthodes de recherches de la classe
+:class:`sqla_helpers.base_model.BaseModel`
+
+.. code-block:: python
+
+    >>> Treatment.get(Q(id=2))
+    >>> <sqlalchemy_test.models.Treatment at 0x2388690>
+
+L'avantage de ces objets, c'est qu'ils permettent de décrire des conditions
+logiques SQL à travers une syntaxe python.
+
+Si l'on veut les traitments qui ont pour id 2 OU le status à pour nom 'KO'
+
+.. code-block:: python
+
+    >>>  Treatment.filter(Q(id=2) | Q(status__name='KO'))
+    [<sqlalchemy_test.models.Treatment at 0x2388690>, <sqlalchemy_test.models.Treatment at 0x23837d0>]
+
+
+Si l'on veut tous les traitments qui n'ont pas pour id 2
+
+.. code-block:: python
+
+    >>> Treatment.filter(~Q(id=2))
+    [<sqlalchemy_test.models.Treatment at 0x2383450>, <sqlalchemy_test.models.Treatment at 0x23837d0>,
+      <sqlalchemy_test.models.Treatment at 0x23886d0> ]
+
+Mais on peut également enchainer les opérations logiques
+
+.. code-block:: python
+
+    >>> Treatment.filter((Q(id=2) | Q(name='toto')) & (Q(name='OK') | ~Q(status__id=3)))
+    2013-02-10 16:39:49,485 INFO sqlalchemy.engine.base.Engine SELECT
+    treatment.id AS treatment_id, treatment.name AS treatment_name,
+    treatment.status_id AS treatment_status_id
+    FROM treatment JOIN status ON status.id = treatment.status_id
+    WHERE (treatment.id = ? OR treatment.name = ?) AND (treatment.name = ? OR
+    status.id != ?)
+    2013-02-10 16:39:49,485 INFO sqlalchemy.engine.base.Engine (2, 'toto', 'OK',
+    3)
+    >>> [<sqlalchemy_test.models.Treatment at 0x2388690>]
+
 
 Du JSON
 -------
