@@ -1,4 +1,4 @@
-0.3.0~dev
+0.3.0 released on 2013-02-10
 	*  Ajout de methodes de conversion et chargement en dictionnaire
 	python
 	* Ajout de l'implémentation de Q Object (Django style)
