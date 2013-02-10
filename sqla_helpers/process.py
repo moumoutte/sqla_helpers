@@ -18,7 +18,6 @@ def process_params(cls, class_found, **kwargs):
     for k, v in kwargs.iteritems():
         # Si il y a des __ dans le paramètre, on souhaite
         # faire une recherche sur un attribut d'une relation
-        print k, v
         params = k.split('__')
         # Le dernier élément peut être un opérateur
         if params[-1] in operators.keys():

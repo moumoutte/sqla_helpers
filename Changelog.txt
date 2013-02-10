@@ -1,8 +1,8 @@
 0.3.0~dev
 	*  Ajout de methodes de conversion et chargement en dictionnaire
 	python
-	* Ajout de l'implémentation de Q Object (Django style), pour l'instant
-	seul l'opérateur OR est implémenté.
+	* Ajout de l'implémentation de Q Object (Django style)
+	  - Opérateurs supportés : ~ & | (not, and, or)
 
 0.2.0
 	* Les méthodes fournies non plus besoin d'une session en paramètre
