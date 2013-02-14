@@ -18,7 +18,7 @@ setup(
         "Natural Language :: French",
         "Operating System :: OS Independent",
         "Programming Language :: Python :: 2.7",
-        "Topic :: Communications",
+        "Topic :: Software Development :: Libraries :: Python Modules",
     ],
     requires=[
         'nose',
