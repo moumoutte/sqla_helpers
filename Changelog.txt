@@ -1,3 +1,10 @@
+0.3.2 released on 2013-02-14
+	* Ajout d'un MANIFEST dans le packaging
+	* Correction du topic dans le setup.py
+
+0.3.1 released on 2013-02-14
+	* Release 0.3.1 permets de biaiser l'erreur de packaging 0.3.0~dev
+
 0.3.0 released on 2013-02-10
 	*  Ajout de methodes de conversion et chargement en dictionnaire
 	python
