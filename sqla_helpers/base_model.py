@@ -1,4 +1,8 @@
 #-*- coding: utf-8 -*-
+"""
+.. autoclass:: BaseModel
+    :members:
+"""
 from sqlalchemy.orm.properties import RelationshipProperty
 from sqlalchemy.orm.collections import InstrumentedList
 

@@ -9,7 +9,11 @@ Welcome to sqla_helpers's documentation!
 Contents:
 
 .. toctree::
-   :maxdepth: 2
+   :glob:
+
+   sqla*
+   dev*
+
 
 
 
