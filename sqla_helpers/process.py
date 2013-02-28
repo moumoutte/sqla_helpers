@@ -2,9 +2,9 @@
 operators = {
     'not': '__ne__',
     'lt': '__lt__',
-    'le': '__lte__',
+    'le': '__le__',
     'gt': '__gt__',
-    'gte': '__gte__',
+    'ge': '__ge__',
     'in': 'in_',
     'like': 'like',
     'ilike': 'ilike',

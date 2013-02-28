@@ -1,3 +1,10 @@
+0.3.4
+	* Corrige les opérateur __le et __ge
+
+0.3.3 released on 2013-02-14
+	* Try except autour de la récupération du long_description dans le
+	setup.py
+
 0.3.2 released on 2013-02-14
 	* Ajout d'un MANIFEST dans le packaging
 	* Correction du topic dans le setup.py
