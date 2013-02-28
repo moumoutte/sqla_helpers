@@ -1,4 +1,4 @@
-0.3.4
+0.3.4 released on 2013-02-2
 	* Corrige les opérateur __le et __ge
 
 0.3.3 released on 2013-02-14
