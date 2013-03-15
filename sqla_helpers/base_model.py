@@ -11,8 +11,7 @@ from sqla_helpers.process import process_params
 
 class ClassProperty(property):
     """
-    Classe qui a pour but de fournir une alternative à l'utilisation du
-    decaroteur property pour un attribut de classe.
+    Class an alternative use or property decorator in class attribute.
     """
     def __get__(self, cls, owner):
         return self.fget.__get__(None, owner)()
@@ -20,8 +19,8 @@ class ClassProperty(property):
 
 class BaseModel(object):
     """
-    Classe d'un modèle de base. Elle fournit du sucre syntaxiques pour faire de
-    la récupération d'objets en base.
+    Base Model Class.
+    Provide syntatic sugar for getting object from database.
     """
 
     process_params = classmethod(process_params)
@@ -30,8 +29,8 @@ class BaseModel(object):
     @classmethod
     def register_sessionmaker(cls, sessionmaker):
         """
-        Enregistrement de la fonction utiliser pour créer une session.
-        La fonction enregistrée ne doit prendre aucun paramètre
+        Register the function for making session.
+        This registered function mustn't have any parameters.
         """
         cls.sessionmaker = staticmethod(sessionmaker)
 
@@ -40,11 +39,9 @@ class BaseModel(object):
     @classmethod
     def session(cls):
         """
-        Appelle :attr:`BaseModel.sessionmaker` et renvoie une session
-        nouvellement construite.
+        Call :attr:`BaseModel.sessionmaker` and returns a nex session.
 
-        Ne pas oubliez de mettre en place :attr:`BaseModel.sessionmaker` dans
-        l'initialisation de l'application.
+        Don't forget to call  :attr:`BaseModel.sessionmaker` in application's initialization.
         """
         return cls.sessionmaker()
 

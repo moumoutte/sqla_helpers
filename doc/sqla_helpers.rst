@@ -5,7 +5,7 @@ Installation
 
 .. rubric:: Git
 
-Installation depuis le dépôt git
+Installation from git
 
 .. code-block:: console
 
@@ -15,7 +15,7 @@ Installation depuis le dépôt git
 
 .. rubric:: Eggs
 
-Installation depuis les archives `eggs`
+Installation from pypi `eggs`
 
 .. code-block:: console
 
