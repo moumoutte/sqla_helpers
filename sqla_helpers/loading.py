@@ -4,8 +4,10 @@ from sqlalchemy.orm.state import InstanceState
 
 def instancied(cls):
     """
-    Instancie une classe sans passer par le __init__.
-    Il faudrait être un peu plus sur de la création de l'objet..
+    Return a class without use on `__init__`.
+
+
+    Need more assurance about object creation
     """
     instance = cls.__new__(cls)
     instance._sa_instance_state = InstanceState(instance,
