@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 """
-Arbre de syntaxe abstraite
-==========================
+Abstract Syntatic Tree
+======================
 
 .. autoclass:: ASTNode
     :members:
@@ -23,30 +23,29 @@ from sqla_helpers.process import process_params
 
 class ASTNode(object):
     """
-    Un nœud d'arbre représentant un opérateur logique (SQLAlchemy)
-    Il contient soit un ensemble de critères soit deux autres nœud d'arbres (ses
-    enfants.)
+    A tree's node represent a logic Sqlalchemy operator.
+    Contains 2 child tree of a set of  criterion.
 
-    Les critères gérés sont ceux d'écrit par la synxate de :mod:`sqla_helpers`
 
-        >>> ast = AndASTNode(id=4, status__name='toto')
+    Handled criterions are describe in  :mod:`sqla_helpers`.
 
-    Les critères seront interprétés par la fonction process_param lors du
-    parcours du sous-arbre par la fonction __call__
+        >>> ast = AndASTNode(id=4, status__name='foo')
+
+    Criterions 'll be interpreted by the `process_param` function
+    during processing of subtree by `__call__` function.
 
         >>> ast(MyClass, [])
         <sqlalchemy.sql.expression.BinaryExpression object at 0x1f04090>
 
-    Un nœud est une feuille de l'arbre si il contient des critères. (i.e. que
-    l'attribut :attr:`ASTNode.operand` n'est pas à None)
+    If a node contains criterions, the node is a leave. (meaning the :attr:`ASTNode.operand`
+    attribute is not `None`.)
 
-    Sinon, il a des enfants et le parcours de l'arbre est un appel récursif pour
-    chacun des fils.
+    If node contains children, a recursive processing of children subtree is done.
 
-    La méthode `ASTNode.operator` est exécutée au retour de process_params ou
-    bien au retour de l'appel récursif sur les fils.
+    `ASTNode.operator` metod is excecuted during the return of `process_param`
+    or during the recursive return of children.
 
-    ASTNode est une classe abstraite qui n'implémente pas `ASTNode.operator`.
+    :class: `ASTNode` is an abstract class which doesn't implement :method: ASTNode.operator`.
     """
 
     def operator(self, *args, **kwargs):
@@ -61,7 +60,7 @@ class ASTNode(object):
 
     def __call__(self, klass, class_found):
         """
-        Parcours et interprétation de chaque nœud de l'arbre.
+        Process and interprets every node.
         """
         # Si l'on a des paramètres bruts, c'est que l'on est une feuille de
         # l'arbre
@@ -84,7 +83,7 @@ class OrASTNode(ASTNode):
 
     def operator(self, *args):
         """
-        Exécute un OU logique sur des critères SQLAlchemy
+        Excecut a logical or on `SQLAlchemy` criterions.
         """
         return or_(*args)
 
@@ -93,7 +92,7 @@ class AndASTNode(ASTNode):
 
     def operator(self, *args):
         """
-        Exécute un ET logique sur des critères SQLAlchemy
+        Excecut a logical and on `SQLAlchemy` criterions.
         """
         return and_(*args)
 
@@ -114,18 +113,18 @@ class NotASTNode(ASTNode):
 
 class Q(object):
     """
-    Classe représentant des opérations logiques en conservrant une
-    syntaxe sqla_helpers
+    Class representing logical operators with sqla_helpers syntax.
 
+    Q object is only here for processing the `sqla_helpers` syntax
+    and implements opertators such as `or`, `and`, `not` ...
 
-    Le Q object n'est là que pour récupérer la syntaxe sqla_helpers et
-    implémenter des opérations (or , and, not...).
-    Au fur et à mesure des opération le Q Object maintient un AST.
-    Chaque opération renvoit en fait un Q object avec un AST mis à jour
-    par rapport à l'objet courant et l'objet avec lequel on fait une opération
-    C'est le __call__ du Q object qui fait un appel sous-jacent au __call__ de
-    des nœud de l'ast. Le retour étant un opération d'SQLAlchemy que l'on peut
-    passer un objet Query.
+    During operations, the :class:`Q` object maintains an AST.
+    Each operation return a :class:`Q` object with an updated AST in
+    relation the current object and the operating object.
+
+    The :method: `__call__` from :class:`Q` call the :method:`__call__`
+    from AST children. The return is an `SQLAlchemy` opertation usable in
+    a `Query` object.
     """
 
     def __init__(self, astnode=None, **kwargs):
@@ -137,7 +136,7 @@ class Q(object):
 
     def __call__(self, klass, class_found):
         """
-        Parcours et interprète l'arbre représenté par le Q object courant.
+        Processing and interpreting AST of current `Q` object.
         """
         return self.ast(klass, class_found)
 
