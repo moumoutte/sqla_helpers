@@ -39,7 +39,7 @@ class BaseModel(object):
     @classmethod
     def session(cls):
         """
-        Call :attr:`BaseModel.sessionmaker` and returns a nex session.
+        Call :attr:`BaseModel.sessionmaker` and returns a new session.
 
         Don't forget to call  :attr:`BaseModel.sessionmaker` in application's initialization.
         """
@@ -49,10 +49,10 @@ class BaseModel(object):
     @classmethod
     def search(cls, *operator, **criterion):
         """
-        Effectue la recherche d'objet suivant les critères passés en arguments.
-        Le retour est un objet :class:`sqlachemy.orm.query.Query`
+        Object seatch with filter pass in arguments.
+        Return a :class:`sqlachemy.orm.query.Query` object.
 
-        Ce qui permet d'enchaîner les critères de recherches si besoin.
+        Filters can be chained.
         """
         query = cls.session.query(cls)
         # On maintient une liste des classes déjà jointes
@@ -73,7 +73,7 @@ class BaseModel(object):
     @classmethod
     def get(cls, *operators, **criterions):
         """
-        Retourne un objet correspond aux critères donnés.
+        Return a object with criterions passed in parameters.
         """
         query = cls.search(*operators, **criterions)
         return query.one()
@@ -82,7 +82,7 @@ class BaseModel(object):
     @classmethod
     def all(cls):
         """
-        Retourne tous les objets d'une classe contenu en base.
+        Return all objects from a same class containts in database.
         """
         return cls.search().all()
 
@@ -90,7 +90,7 @@ class BaseModel(object):
     @classmethod
     def filter(cls, *operators, **criterions):
         """
-        Retourne une liste d'objets d'une classe correspond aux critères donnés.
+        Return a list of objects from a class matching criterions passed in parameters.
         """
         query = cls.search(*operators, **criterions)
         return query.all()
@@ -99,13 +99,10 @@ class BaseModel(object):
     @classmethod
     def load(cls, d, hard=False):
         """
-        Instancie un objet de la classe à partir d'attribut récupérer dans le
-        dictionnaire fournit.
+        Return a object from class with attributes got in dictionnary's parameters.
 
-        Si le dictionnaire fournit toutes les valeurs qui constituent la clef
-        primaire de l'objet, alors l'objet est chargé depuis la base. Puis
-        les valeurs indiquées dans le dictionnaire sont rentrées dans l'objet
-        chargée.
+        If all values got from dictionnary form the primary key, the object is
+        loaded from database. Other values are set in the loading object.
 
         .. code-block:: python
 
@@ -119,8 +116,8 @@ class BaseModel(object):
             >>> Treatment.get(id=1).name
             'Awesome Treatment'
 
-        Si l'option `hard` est à True , une exception est levée si une valeur
-        n'est pas trouvée dans le dictionnaire fournit.
+        If `hard` parameter is True, an axception is raised if a value isn't found
+        in parameter's dictionnary.
         """
 
         # On détermine si on doit charger l'instance depuis la base ou non.
@@ -184,15 +181,13 @@ class BaseModel(object):
 
     def dump(self, excludes=[], depth=2):
         """
-        Retourne l'objet sous forme de dictionnaire python avec ses
-        dépendances.
+        Return object as dictionnary with dependencies.
 
-        La profondeur permet de ne pas copier les attributs trop profondéments.
-        Par exemple avec une profondeur de 1, on n'ira pas chercher les objets
-        en relation.
+        `Depth` limits the recursion.
 
-        Le paramètre d'exclusion sert à exclure les attributs que l'on ne
-        veut pas exporter.
+        IE : With depth set as 1, objects in relations aren't search.
+
+        `excludes` use to excludes unwanted attributes.
 
         .. code-block:: python
 
