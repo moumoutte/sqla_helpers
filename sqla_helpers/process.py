@@ -10,29 +10,26 @@ operators = {
     'ilike': 'ilike',
 }
 """
-Dictionnaire des opérateurs applicables à un InstrumentedAttribut
-La clef représente l'opérateur dans la syntaxe :mod:`sqla_helpers` et la valeur
-est le nom de la méthode a appellé sur un objet de type. InstrumentAttribut
+Dictonnary of usasable operators to a `InstrumentedAttribut`.
+Keys are operators in :mod:`sqla_helpers` syntax and values are methods name
+called by an InstrumentAttribut object.
 """
 
 def process_params(cls, class_found, **kwargs):
     """
-    Retourne une liste de critères SQLAlchemy suivant la syntaxe sqla_helpers.
+    Returns a `SQLAlchemy` criterions list matching :mod:`sqla_helpers` syntax.
 
-    :param:`cls` est la classe racine à partir de laquelle les attributs seront
-    récupérer.
+    :param:`cls` is the root class providing attributes
 
-    Au fur et à mesure du traitement, on stock les classes des attributs
-    rencontrées dans le paramètre :param:`class_found`. Elles ne sont ajoutées
-    que lorsqu'elles n'apparaissent pas dans la liste (i.e. pas de doublon dans
-    la liste.)
+    During processing, found attributes are stored  in :param:`class_found`
+    parameters. :param:`class_found` is a set.
 
-    L'attribut est donc modifié au fur et à mesure du traitement (Effet de bord).
+    Attribute is updated during process.
 
-    .. rubric:: Exemple
+    .. rubric:: Example
 
-    Si l'on souhaite faire une recherche sur l'attribut `name` d'un objet de la
-    classe Treatment, la fonction sera appellée:
+    If a quering on the attribute `name` from a `Treatment` object, the function
+    'll be called:
 
     .. code-block:: python
 
@@ -42,9 +39,8 @@ def process_params(cls, class_found, **kwargs):
         >>> class_found
         []
 
-    Dans cet exemple le paramètre :param:`class_found` n'a pas bougé puisque
-    l'attribut `name` n'est pas un objet ezn relation. Mais si nous recherchions
-    des traitments par status nous aurions
+    In this example, because of the attribute `name` isn't in the related object, the
+    :param:`class_found` isn't modified. In other hand a query on `status` attribute :
 
     .. code-block:: python
 

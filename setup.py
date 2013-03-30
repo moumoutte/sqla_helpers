@@ -13,7 +13,7 @@ setup(
     version=sqla_helpers.__version__,
     author='Guillaume Camera',
     author_email='camera.g@gmail.com',
-    description="Fournit quelques méthodes de récupération d'objet en base autour d'SQLAlchemy",
+    description="Provides some methogs for getting objects with SQLAlchemy",
     long_description=long_description,
     url="https://github.com/moumoutte/sqla_helpers/",
     packages=find_packages(),
