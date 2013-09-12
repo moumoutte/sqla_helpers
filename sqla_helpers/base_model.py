@@ -97,7 +97,7 @@ class BaseModel(object):
 
 
     @classmethod
-    def load(cls, d, hard=False):
+    def load(cls, dictionary, hard=False):
         """
         Return a object from class with attributes got in dictionnary's parameters.
 
@@ -127,11 +127,11 @@ class BaseModel(object):
         from_db = False
         loading_key = {}
         for attr in cls.__mapper__.primary_key:
-            if not attr.key in d:
+            if not attr.key in dictionary:
                 from_db = False
                 break
 
-            loading_key[attr.key] = d[attr.key]
+            loading_key[attr.key] = dictionary[attr.key]
             from_db = True
 
         if from_db:
@@ -146,7 +146,7 @@ class BaseModel(object):
         # exception, sinon on ignore l'erreur.
         for attr_key, attr_type in cls.__mapper__._props.iteritems():
             try:
-                attr_value = d[attr_key]
+                attr_value = dictionary[attr_key]
             except KeyError:
                 # En mode soft, on ne relache pas l'erreur
                 # En mode hard, oui.
@@ -164,8 +164,8 @@ class BaseModel(object):
                     if isinstance(instance_attr, InstrumentedList):
                         # Si on est sur une liste, on s'attend à avoir une
                         # liste de dico
-                        for d in attr_value:
-                            instance_attr.append(attr_class.load(d))
+                        for obj_to_load in attr_value:
+                            instance_attr.append(attr_class.load(obj_to_load))
                     else:
                         instance_attr = attr_class.load(attr_value)
 
