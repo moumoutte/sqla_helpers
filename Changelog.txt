@@ -1,3 +1,6 @@
+0.3.5dev (unreleased)
+	* Fix the loading of an attributes as list (BaseModel.load)
+
 0.3.4 released on 2013-02-2
 	* Corrige les opérateur __le et __ge
 
