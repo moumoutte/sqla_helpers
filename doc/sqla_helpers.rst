@@ -66,8 +66,8 @@ function. This prevents the mixin use of the class.
         # ...
 
 
-:class:`sqla_helpers.base_model.BaseModel` need a to have a method for getting a session when querying is done.
-For this purpose, the class use the stored function in :attr:`sqla_helpers.base_model.BaseModel.sessionmaker`.:
+:class:`sqla_helpers.base_model.BaseModel` need to build a session when querying is done.
+In order to access a session when needing, the class uses the stored function in :attr:`sqla_helpers.base_model.BaseModel.sessionmaker`.:
 So a sessionmaker is need to be stored using the `sqla_helpers.base_model.BaseModel.register_sessionmaker` method
 
 .. code-block:: python
@@ -78,8 +78,7 @@ So a sessionmaker is need to be stored using the `sqla_helpers.base_model.BaseMo
         BaseModel.register_sessionmaker(scoped_session(sessionmaker(bind=engine)))
         # ...
 
-For a global session, the function set in  :attr:`sqla_helpers.base_model.BaseModel.sessionmaker` should return
-a reference to a global session.
+For a global session, you can just pass a Session which is not a `callable`
 
 .. code-block:: python
 
@@ -88,8 +87,10 @@ a reference to a global session.
     # Application's initialization
     def main():
         # ...
-        BaseModel.register_sessionmaker(lambda: DBSession)
+        BaseModel.register_sessionmaker(DBSession)
         # ...
+
+Register a sessionmaker is kind 
 
 
 Basic use case :
@@ -147,12 +148,12 @@ Quering a with entire object.
     [<MyModel object at 0x2c19d90>]
 
 
-The `__` separator (double underscore) permits to split between the differents entities.
+The `__` separator (double underscore) allows to split between the differents entities.
 
-Quering with relation`s attributes can be recursive.
-If `MyOtherObject` have an `other_attr` attribute which is in relation with a `MyOtherOtherObject` object.
+Quering with relation`s attributes can be done recursively.
+If `MyOtherObject` has an `other_attr` attribute which is in relation with a `MyOtherOtherObject` object.
 
-Quering all `MyModel` which a `MyOtherObject` has `MyOtherOtherObject` has a `name` attribute is 'foo'.
+Quering all `MyModel` with a `MyOtherObject` has `MyOtherOtherObject` has a `name` attribute is 'foo'.
 
 .. code-block:: python
 
@@ -164,10 +165,10 @@ Quering all `MyModel` which a `MyOtherObject` has `MyOtherOtherObject` has a `na
 Operators
 ---------
 
-Others criterions  than equality can be used. These criterions sould be writen
-with the attribute name following '__' (double underscore) and name of the operator.
+Others criterions as equality can be used. Those criterions should be written
+with the attribute name following '__' (double underscore) and operator's name.
 
-IE: if all `MyModel` which `id` is different from 2 are wanted:
+IE: if all `MyModel` with `id` different from 2 are wanted:
 
 .. code-block:: python
 
@@ -180,7 +181,7 @@ Available operatores are:
 * 'lt': letter than,
 * 'le': letter or equals than,
 * 'gt': gretter than,
-* 'gte': gretter or equal than,
+* 'ge': gretter or equal than,
 * 'in': in a list,
 * 'like': SQL `LIKE` operator,
 * 'ilike': SQL `ILIKE` operator.
@@ -189,7 +190,7 @@ Available operatores are:
 More complex quering
 --------------------
 
-In the Django spirit, :mod:`sqla_helpers` provide a :class:`sqla_helpers.logical.Q` object for more complex quering.
+As the Django way, :mod:`sqla_helpers` provides a :class:`sqla_helpers.logical.Q` object for more complex queries.
 The :class:`sqla_helpers.logical.Q` object can use the :mod:`sqla_helpers' syntax.
 
 .. code-block:: python
@@ -208,9 +209,9 @@ These objects are usable as criterions for query.
     >>> Treatment.get(Q(id=2))
     >>> <sqlalchemy_test.models.Treatment at 0x2388690>
 
-The purpose of these objects is to permit SQL logical conditions in a python syntax.
+The goal of those objects is to allow SQL logical conditions in a python syntax.
 
-If all `Treatment` objects which have an `id` == 2 or a `Status` name == 'KO' are wanted.
+If all `Treatment` objects wih an `id` == 2 or a `Status` name == 'KO' are wanted.
 
 .. code-block:: python
 
@@ -246,9 +247,9 @@ JSON
 ----
 
 Often in web oriented applications, client and server exchange with JSON format.
-In a purpose of easier loading, :mod:`sqla_helpers` furnish methods for loading from a regular python dictionary or a SQLAlchemy model object.
+In order to have easier loading, :mod:`sqla_helpers` provides methods for loading from a regular python dictionary or a SQLAlchemy model object.
 
-The :meth:`sqla_helpers.base_model.BaseModel.dump` method permit a JSON compatible dictionnary.
+The :meth:`sqla_helpers.base_model.BaseModel.dump` method allows a JSON compatible dictionary.
 
 .. code-block:: python
 
@@ -264,8 +265,8 @@ The :meth:`sqla_helpers.base_model.BaseModel.dump` method permit a JSON compatib
         }
 
 
-The method `sqla_helpers.base_model.BaseModel.load` can construct object from a dictionnary.
-The meaning of use a dictionnary is to facillitate access to data in JSON or generate JSON frpm dictionnary.
+The method `sqla_helpers.base_model.BaseModel.load` can build object from a dictionary.
+The meaning of use a dictionary is to facilitate access to data in JSON or generate JSON from dictionary.
 
 Objects are getting from database if primary key attributes are found on the dictionnary. Otherwise new object
 are created.

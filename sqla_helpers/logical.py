@@ -24,25 +24,25 @@ from sqla_helpers.process import process_params
 class ASTNode(object):
     """
     A tree's node represent a logic Sqlalchemy operator.
-    Contains 2 child tree of a set of  criterion.
+    Contains 2 child tree of a set of criterion.
 
 
-    Handled criterions are describe in  :mod:`sqla_helpers`.
+    Handled criterions are describes in  :mod:`sqla_helpers`.
 
         >>> ast = AndASTNode(id=4, status__name='foo')
 
-    Criterions 'll be interpreted by the `process_param` function
+    Criterions 'll be process by the `process_param` function
     during processing of subtree by `__call__` function.
 
         >>> ast(MyClass, [])
         <sqlalchemy.sql.expression.BinaryExpression object at 0x1f04090>
 
-    If a node contains criterions, the node is a leave. (meaning the :attr:`ASTNode.operand`
+    If a node contains criterions, the node is a leaf. (meaning the :attr:`ASTNode.operand`
     attribute is not `None`.)
 
-    If node contains children, a recursive processing of children subtree is done.
+    If node contains children, a recursive processing of children subtrees is done.
 
-    `ASTNode.operator` metod is excecuted during the return of `process_param`
+    `ASTNode.operator` method is excecuted during the return of `process_param`
     or during the recursive return of children.
 
     :class: `ASTNode` is an abstract class which doesn't implement :method: ASTNode.operator`.
@@ -60,7 +60,7 @@ class ASTNode(object):
 
     def __call__(self, klass, class_found):
         """
-        Process and interprets every node.
+        Process every node.
         """
         # Si l'on a des paramètres bruts, c'est que l'on est une feuille de
         # l'arbre
