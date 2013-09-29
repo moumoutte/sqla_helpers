@@ -39,3 +39,10 @@ def test_callable_multiple_kwargs():
 
     kwargs = {'bonii': 4, 'other': 8}
     assert 14 == call_if_callable(add_all, [2], kwargs)
+
+
+def test_callable_else():
+    def concat_plop(x):
+        return u'{0}.plop'.format(x)
+
+    assert u'test.plop' == call_if_callable(u'test', else_=concat_plop)
