@@ -67,9 +67,9 @@ function.
 
 
 :class:`sqla_helpers.base_model.BaseModel` need to build a session when queries are done.
-In order to access a session when needing, the class uses the stored function :attr:`sqla_helpers.base_model.BaseModel.sessionmaker`.:
-So we need to store a session_maker by `sqla_helpers.base_model.BaseModel.register_sessionmaker` method.
-This function will be called each time a session is need. 
+In order to access a session when needing, the class uses the stored function :attr:`sqla_helpers.base_model.BaseModel.sessionmaker`. 
+This function will be called each time a session is needed.
+So we need to store a session_maker by calling `sqla_helpers.base_model.BaseModel.register_sessionmaker` method.
 
 .. code-block:: python
 
