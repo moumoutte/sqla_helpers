@@ -1,5 +1,8 @@
 #-*- coding: utf-8 -*-
 """
+.. autoclass:: SessionMakerExists
+    :members:
+
 .. autoclass:: BaseModel
     :members:
 """
