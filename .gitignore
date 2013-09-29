@@ -1,4 +1,6 @@
 *.py[cod]
+# vim
+*.sw*
 
 # C extensions
 *.so
