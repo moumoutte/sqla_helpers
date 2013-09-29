@@ -35,7 +35,7 @@ class ClassProperty(property):
 class BaseModel(object):
     """
     Base Model Class.
-    Provide syntatix sugar for getting object from database.
+    Provide syntactic sugar for getting object from database.
     """
 
     sessionmaker = None
@@ -49,7 +49,7 @@ class BaseModel(object):
         This registered function mustn't have any parameters.
         For a globale session, just put the session as parameter.
         If a session maker is already registered, an exception is raised to avoid conflict.
-        But, if you are sur about what your are doing, you can set `force` parameter to True.
+        But, if you are sure about what your are doing, you can set `force` parameter to True.
         It's not advice.
         """
         if cls.sessionmaker is None or force:
@@ -73,7 +73,7 @@ class BaseModel(object):
     def search(cls, *operator, **criterion):
         """
         Object search with criterions given in arguments.
-        Return a :class:`sqlachemy.orm.query.Query` object.
+        Returns a :class:`sqlachemy.orm.query.Query` object.
 
         Filters can be chained.
         """
@@ -96,7 +96,7 @@ class BaseModel(object):
     @classmethod
     def get(cls, *operators, **criterions):
         """
-        Return a object with criterions given in parameters.
+        Returns an object with criterions given in parameters.
         """
         query = cls.search(*operators, **criterions)
         return query.one()
@@ -105,7 +105,7 @@ class BaseModel(object):
     @classmethod
     def all(cls):
         """
-        Return all objects from the same class contains in database.
+        Returns all objects from the same class contained in database.
         """
         return cls.search().all()
 
@@ -113,7 +113,7 @@ class BaseModel(object):
     @classmethod
     def filter(cls, *operators, **criterions):
         """
-        Return a list of objects from a class matching criterions given in parameters.
+        Returns a list of objects from a class matching criterions given in parameters.
         """
         query = cls.search(*operators, **criterions)
         return query.all()
@@ -122,9 +122,9 @@ class BaseModel(object):
     @classmethod
     def load(cls, dictionary, hard=False):
         """
-        Return a object from class with attributes got in dictionary's parameters.
+        Returns an object from class with attributes got in dictionary's parameters.
 
-        If all the primary key are found in the dictionary, the object is
+        If all the primary keys are found in the dictionary, the object is
         loaded from database. Otherwise, values are set in the loading object.
 
         .. code-block:: python
@@ -139,7 +139,7 @@ class BaseModel(object):
             >>> Treatment.get(id=1).name
             'Awesome Treatment'
 
-        If `hard` parameter is True, an axception is raised if a value isn't found
+        If `hard` parameter is True, an exception is raised if a value isn't found
         in parameter's dictionary.
         """
 
@@ -204,13 +204,13 @@ class BaseModel(object):
 
     def dump(self, excludes=[], depth=2):
         """
-        Return object as dictionary with dependencies.
+        Returns object as dictionary with dependencies.
 
         `Depth` limits the recursion.
 
         IE : With depth set as 1, objects in relations aren't search.
 
-        `excludes` use to excludes unwanted attributes.
+        `excludes` use to exclude unwanted attributes.
 
         .. code-block:: python
 
