@@ -101,11 +101,10 @@ But sometimes, may be you need to change it while application is running. So, yo
     >>> new_db_session = amazing_function()
     >>> BaseModel.register_sessionmaker(new_db_session)
     Traceback (most recent call last):
-    File "<stdin>", line 1, in <module>
+        File "<stdin>", line 1, in <module>
     SessionMakerExists: A session maker is already registered.
     >>> BaseModel.register_sessionmaker(new_db_session, force=True)
     
-
 Basic use case :
 
 .. code-block:: python
@@ -178,10 +177,10 @@ Quering all `MyModel` with a `MyOtherObject` has `MyOtherOtherObject` has a `nam
 Operators
 ---------
 
-Others criterions as equality can be used. Those criterions should be written
+Others operators than equality can be used. Those operators should be written
 with the attribute name following '__' (double underscore) and operator's name.
 
-IE: if all `MyModel` with `id` different from 2 are wanted:
+IE: if all `MyModel` with `id` different than 2 are wanted:
 
 .. code-block:: python
 
