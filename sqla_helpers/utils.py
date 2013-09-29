@@ -14,6 +14,7 @@ def call_if_callable(maybe_callable, callable_args=None, callable_kwargs=None, e
     identity function, so when maybe_callable is not callable, the function returns `maybe_callable.`
 
     .. code-block:: python
+
         >>> call_if_callable(u'test')
         u'test'
         >>> def add2(x):
