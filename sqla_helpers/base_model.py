@@ -8,6 +8,18 @@ from sqlalchemy.orm.collections import InstrumentedList
 
 from sqla_helpers import loading
 from sqla_helpers.process import process_params
+from sqla_helpers.utils import call_if_callable
+
+class SessionMakerExists(Exception):
+    """
+    Exception raised when a session maker is already registered in :class:`sqla_helpers.base_model.BaseModel`
+    """
+    def __unicode__(self):
+        return u'A session maker is already registered.'
+
+    def __str__(self):
+        return 'A session maker is already registered'
+
 
 class ClassProperty(property):
     """
@@ -23,16 +35,24 @@ class BaseModel(object):
     Provide syntatic sugar for getting object from database.
     """
 
+    sessionmaker = None
     process_params = classmethod(process_params)
 
 
     @classmethod
-    def register_sessionmaker(cls, sessionmaker):
+    def register_sessionmaker(cls, sessionmaker, force=False):
         """
         Register the function for making session.
         This registered function mustn't have any parameters.
+        For a globale session, just put the session as parameter.
+        If a session maker is already registered, an exception is raised to avoid conflict.
+        But, if you are sur about what your are doing, you can set `force` parameter to True.
+        It's not advice.
         """
-        cls.sessionmaker = staticmethod(sessionmaker)
+        if cls.sessionmaker is None or force:
+            cls.sessionmaker = staticmethod(sessionmaker)
+        else:
+            raise SessionMakerExists()	
 
 
     @ClassProperty
@@ -43,7 +63,7 @@ class BaseModel(object):
 
         Don't forget to call  :attr:`BaseModel.sessionmaker` in application's initialization.
         """
-        return cls.sessionmaker()
+        return call_if_callable(cls.sessionmaker)
 
 
     @classmethod

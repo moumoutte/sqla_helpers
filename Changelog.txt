@@ -1,3 +1,7 @@
+0.4.0dev unreleased
+	* The sessionmaker can be just a session. Not need to have a lambda function to return it.
+	* Raise an exception when try to register a session maker despite a session maker already registered
+
 0.3.5 released on 2013-09-15
 	* Fix the loading of an attributes as list (BaseModel.load)
 
