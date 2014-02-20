@@ -119,11 +119,14 @@ Basic use case :
     [<MyModel object at 0x2c19d90>]
     >>> MyModel.filter(id=3)
     []
+    >>> MyModel.count(id=2)
+    1
 
 
 * :meth:`sqla_helpers.base_model.BaseModel.all` returns all the database objects
 * :meth:`sqla_helpers.base_model.BaseModel.filter` returns a list of matching objects.
 * :meth:`sqla_helpers.base_model.BaseModel.get` returns an uniq matching object.
+* :meth:`sqla_helpers.base_model.BaseModel.count` returns the number of matching objects.
 
 Querying criterions can be chained with an `&&` (logical and) operator.
 
