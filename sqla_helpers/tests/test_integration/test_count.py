@@ -49,4 +49,6 @@ def test_count():
 def test_complex_count():
     assert Treatment.count(status__name=u'ok') == 10
     assert Treatment.count(status__name=u'ko') == 8
-    assert Treatment.count() == 18
+    assert Treatment.count(~Q(id=2)) == 17
+    assert Treatment.count(Q(id=2) | Q(id=3), status__name=u'ok') == 2
+    assert Treatment.count(Q(id=2) | Q(status__name=u'ko')) == 9
