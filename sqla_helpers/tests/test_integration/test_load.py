@@ -12,7 +12,7 @@ engine = create_engine('sqlite://')
 session = sessionmaker(bind=engine)()
 
 def populate():
-	BaseModel.register_sessionmaker(lambda: session)
+	BaseModel.register_sessionmaker(session, force=True)
 	metadata.create_all(engine)
 	status = [Status(u'ok'), Status(u'ko')]
 	session.add_all(status)

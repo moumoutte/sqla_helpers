@@ -15,6 +15,10 @@ class Treatment(DeclarativeModel):
     status_id = Column('status_id', ForeignKey("status.id"))
     status = relationship('Status', backref='treatments')
 
+    def __init__(self, name, status):
+        self.name = name
+        self.status = status
+
 
 class Status(DeclarativeModel):
     __tablename__ = 'status'
@@ -22,4 +26,4 @@ class Status(DeclarativeModel):
     name = Column('name', String)
 
     def __init__(self, name):
-	self.name = name
+        self.name = name

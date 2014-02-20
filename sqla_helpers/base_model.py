@@ -6,6 +6,7 @@
 .. autoclass:: BaseModel
     :members:
 """
+from functools import wraps
 from sqlalchemy.orm.properties import RelationshipProperty
 from sqlalchemy.orm.collections import InstrumentedList
 
@@ -30,6 +31,52 @@ class ClassProperty(property):
     """
     def __get__(self, cls, owner):
         return self.fget.__get__(None, owner)()
+
+
+def query_operation(decorated_method=None, operation_name=None):
+    """
+    query_operation process a search on a query with criterion and operators.
+    Then, the operation_name operation is called on the query. If operation_name is not set
+    the operation_name is taken from the decorated method
+
+    .. code-block:: python
+
+        @query_operation
+        def count(cls, *operators, **criterions):
+            # This method will call the cls.search(*operators, **criterions)
+            # Then , it will call count operation on the result of previous search
+            # I.E. : the generated code will be "return cls.search(*operators, **criterions).count()"
+
+        @query_operation(operation_name='one')
+        def get(cls, *operators, **criterions):
+            # It will process the same thing above, except the function compute on the query will be 'one'
+            # I.E. : return cls.search(*operators, **criterions).one()
+ 
+    .. warning:
+
+        This decorataror defines the decorated_method as a classmethod.
+
+    """
+
+    if  decorated_method and operation_name is None:
+        operation_name = decorated_method.__name__
+
+    def _wrapper(decorated_method):
+
+        @classmethod
+        @wraps(decorated_method)
+        def _decorator(querying_class, *operators, **criterions):
+
+            query = querying_class.search(*operators, **criterions)
+            method = query.__getattribute__(operation_name)
+            return method()
+
+        return _decorator
+
+    if decorated_method is not None:
+        return _wrapper(decorated_method)
+    else:
+        return _wrapper
 
 
 class BaseModel(object):
@@ -93,30 +140,34 @@ class BaseModel(object):
         return query.filter(*clauses)
 
 
-    @classmethod
+    @query_operation(operation_name='one')
     def get(cls, *operators, **criterions):
         """
         Returns an object with criterions given in parameters.
         """
-        query = cls.search(*operators, **criterions)
-        return query.one()
 
-
-    @classmethod
+    @query_operation
     def all(cls):
         """
         Returns all objects from the same class contained in database.
         """
-        return cls.search().all()
 
-
-    @classmethod
+    @query_operation
     def filter(cls, *operators, **criterions):
         """
         Returns a list of objects from a class matching criterions given in parameters.
         """
-        query = cls.search(*operators, **criterions)
-        return query.all()
+
+    @query_operation
+    def count(cls, *operators, **criterions):
+        """
+        Returns the number of objects matched by criterions
+
+        .. code-block:: python
+
+           >>> Treatment.count(status=u'OK')
+           8
+        """
 
 
     @classmethod
