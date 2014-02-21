@@ -1,3 +1,6 @@
+0.5.1dev unreleased
+    * Filter method returns a correct list, not a queryset
+
 0.5.0 released on 2014-02-20
     * Add count method for BaseModel
 

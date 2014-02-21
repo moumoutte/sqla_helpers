@@ -152,7 +152,7 @@ class BaseModel(object):
         Returns all objects from the same class contained in database.
         """
 
-    @query_operation
+    @query_operation(operation_name='all')
     def filter(cls, *operators, **criterions):
         """
         Returns a list of objects from a class matching criterions given in parameters.
