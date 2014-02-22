@@ -69,3 +69,10 @@ def test_load():
 	status = Status.load({'id': 1})
 	assert status.id == 1 
 	assert status.name == u'ok'
+
+
+@with_setup(populate, unpopulate)
+def test_coeherence():
+    tr = Treatment.get(id=1)
+    tr2 = Treatment.load(tr.dump())
+    assert tr == tr2
