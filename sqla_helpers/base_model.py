@@ -2,6 +2,8 @@
 """
 .. autoclass:: SessionMakerExists
     :members:
+    
+.. autofunction:: query_operation
 
 .. autoclass:: BaseModel
     :members:
